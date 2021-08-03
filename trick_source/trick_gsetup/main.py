@@ -27,10 +27,6 @@ import errno
 import ntpath
 import glob
 
-# from idlelib.ToolTip import *
-
-
-#TODO: Write test case for this function
 def QuoteForPOSIX(string): #Adapted from https://code.activestate.com/recipes/498202-quote-python-strings-for-safe-use-in-posix-shells/
     '''quote a string so it can be used as an argument in a  posix shell
 
@@ -49,50 +45,23 @@ def QuoteForPOSIX(string): #Adapted from https://code.activestate.com/recipes/49
     '''
 
     return "\\'".join("'" + p + "'" for p in string.split("'"))
-
-def get_configure_command(command, config_json, include_vars=False):
-    def get_with_catch(my_dict, key):
-        try:
-            return my_dict[key]
-        except KeyError as e:
-            raise RuntimeError(f"Required key {e} not found in the following json: {my_dict}")
-
-    sep = " "
+def get_configure_command(command: str, config_json: dict, include_vars=False):
     vars = ""
-    for section_name, section in get_with_catch(config_json, "sections").items():
-        for option_name, option in get_with_catch(section, "options").items():
-            if get_with_catch(option, "type") in ("bool", "flag"):
-                value = bool_to_string(string_to_bool(str(get_with_catch(option, "value"))))
-            elif get_with_catch(option, "type") in ("dir", "string"):
-                value = str(get_with_catch(option, "value"))
-                if value == "":
-                    continue
-            elif get_with_catch(option, "type") == "envvar":
-                value = str(get_with_catch(option, "value"))
-                if value == "":
-                    if option_name in os.environ:
-                        del os.environ[option_name]
-                else:
-                    os.environ[option_name] = value
-                    if include_vars:
-                        vars += f"{option_name} = {value}\n"
-                continue
-            elif get_with_catch(option, "type") in ("radio"):
-                value = str(get_with_catch(option, "value"))
+    data = Data(**config_json)
+    for section_name, section in data.sections._dict_().items():
+        s = Section(None, section_name, data)
+        for option in s.components.values():
+            value = option.get_option()
+            if option.type != "envvar":
+                command += f" {value}"
             else:
-                my_type = get_with_catch(option, "type")
-                raise RuntimeError(f"In function call get_configure_command: Option type '{my_type}' in {option} is not implemented yet.")
-            if value not in ("no"): #TODO: Check what possible values there are for false
-                #TODO: Should we add the no's to the comand
-                command += f"{sep}--{option_name}"
-                if option["type"] != "flag" and value not in ("EMPTY"): #TODO: Tell the developer this is a key word
-                    value = QuoteForPOSIX(value)
-                    command += f"={value}"
+                vars += value + "\n"
     if include_vars:
         command = vars + command
-    return command
+    return command.strip()
 
-def string_to_bool(string):
+
+def string_to_bool(string: str):
     if string.lower() in ("yes", "true"):
         return True
     else:
@@ -210,9 +179,14 @@ class Component:
             self.params.append(key)
     
     def get_hidden(self):
-        try:
-            return string_to_bool(self.hidden)
-        except:
+        if "hidden" in dir(self):
+            if type(self.hidden) is bool:
+                return self.hidden
+            elif type(self.hidden) is str:
+                return string_to_bool(self.hidden)
+            else:
+                raise RuntimeError("Hidden is not a String or a Boolean")
+        else:
             return False
 
     def pack(self, tk, **kargs):        
@@ -246,6 +220,12 @@ class Option(Component):
         
     def get_frame(self):
         return self.frame
+    
+    def get_option(self):
+        if self.value not in ("no", ""):
+            return f"--{self.name}={QuoteForPOSIX(self.value)}"
+        else:
+            return ""
 
 class ToolTip(object): #Adapted from https://stackoverflow.com/questions/20399243/display-message-when-hovering-over-something-with-mouse-cursor-in-python
 
@@ -296,8 +276,7 @@ class OptionDir(Option):
         self.value = "" if self.value == "default" else self.value
 
         #Building GUI
-        self.container = self.get_frame()
-        self.container = LabelFrame(self.get_frame(), text=f"{self.label} - {self.desc}")
+        self.container = LabelFrame(self.get_frame(), text=f"{self.label}" + (f" - {self.desc}" if len(self.desc) != 0 else ""))
         self.pack(self.container, fill="both", expand=True)
         # self.label_tk = Label(self.container, text=self.label)
         # self.pack(self.label_tk, side="left")
@@ -337,16 +316,25 @@ class OptionBool(Option):
         self.label = self.name if self.label == "default" else self.label
     
         #Building GUI
+        self.container = Frame(self.get_frame())
+        self.container.pack(expand=True, fill="both")
         self.bool = BooleanVar(value = self.value)
-        self.check_button = Checkbutton(self.get_frame(), text=self.label, command=self.handler, variable=self.bool)
+        self.check_button = Checkbutton(self.container, text=self.label, command=self.handler, variable=self.bool)
         self.pack(self.check_button, side="left")
-        self.desc_label = Label(self.get_frame(), text = f": {self.desc}") #TODO: Make a pop up
+        self.desc_label = Label(self.container, text = f": {self.desc}" if len(self.desc) != 0 else "") #TODO: Make a pop up
         self.pack(self.desc_label, side="left")
         # CreateToolTip(self.check_button, self.desc)
     
     def handler(self):
         logging.debug(f"Setting value to {self.bool.get()}.")
         self.value = "yes" if self.bool.get() else "no"
+    
+    def get_option(self):
+        value = string_to_bool(str(self.value))
+        if value:
+            return f"--{self.name}" + ("" if self.type == "flag" else f"={QuoteForPOSIX(bool_to_string(value))}")
+        else:
+            return ""
 
 class OptionString(OptionDir):
     def __init__(self, parent, section, name, data):
@@ -362,26 +350,20 @@ class OptionEnvVar(OptionDir):
         self.container["text"] = "ENV: " + self.container["text"]
         self.browse_button.pack_forget()
 
-        # self.value = "" if self.value == "default" else self.value
-        # self.label = self.name if self.label == "default" else self.label
+    def get_option(self):
+        value = str(self.value)
+        if value == "":
+            if self.name in os.environ:
+                del os.environ[self.name]
+            return ""
+        os.environ[self.name] = value
+        return f"{self.name} = {value}"
 
-        # self.tk_label = Label(self.get_frame(), text=self.label)
-        # self.pack(self.tk_label, side="left", pady=10)
-
-        # self.directory_entry = Entry(self.get_frame())
-        # self.directory_entry.bind('<KeyRelease>', self.handler)
-        # self.directory_entry.insert(0, self.value)
-        # self.pack(self.directory_entry, fill="both", expand=True, side="left")
-
-
-    # def handler(self, event):
-        # logging.debug(f"Setting value to {self.directory_entry.get()}")
-        # self.value = self.directory_entry.get()    
 
 class OptionRadio(Option):
     def __init__(self, parent, section, name: str, data: Data):
         super().__init__(parent, section, name, data, special_valid_params=["options"], special_required_params=[])
-        self.options = [] if self.options == "default" else self.options
+        self.options = Data(**{}) if self.options == "default" else self.options
         self.value = "" if self.value == "default" else self.value
 
         self.box = LabelFrame(self.get_frame(), text=f"{self.name} - {self.desc}")
@@ -501,7 +483,7 @@ class Section(Component):
 
 
 class App(Component):
-    def __init__(self, my_json_or_filename, program="/home/cherpin/git/trick/configure", resource_folder = f'{os.path.dirname(os.path.realpath(__file__))}/resources'):
+    def __init__(self, my_json_or_filename, program: str = "/home/cherpin/git/trick/configure", resource_folder: str = f'{os.path.dirname(os.path.realpath(__file__))}/resources') -> None:
         if type(my_json_or_filename) == str: #Handle a file name
             self.open(my_json_or_filename)
             self.filename = my_json_or_filename
@@ -560,9 +542,9 @@ class App(Component):
         navigation_frame = Frame(self.body)
         navigation_frame.pack(anchor="e")
 
-        tab_right_button = Button(navigation_frame, text="right", command=lambda: switch_tab(1)) #TODO: Make this a picture
+        tab_right_button = Button(navigation_frame, text="Next Tab", command=lambda: switch_tab(1)) #TODO: Make this a picture
         tab_right_button.pack(side="right")
-        tab_left_button = Button(navigation_frame, text="left", command=lambda: switch_tab(-1)) #TODO: Make this a picture
+        tab_left_button = Button(navigation_frame, text="Previous Tab", command=lambda: switch_tab(-1)) #TODO: Make this a picture
         tab_left_button.pack(side="right")
 
 
@@ -623,7 +605,7 @@ class App(Component):
             obj = getattr(getattr(self.source, "sections"), section)
             if len(getattr(obj, "options")._dict_()) > 0: #Note: not adding section if empty
                 self.sections[section] = Section(self.notebook, section, self.source)
-                CreateToolTip(self.sections[section].get_frame(), section)
+                # CreateToolTip(self.sections[section].get_frame(), section)
         
         self.previous_section_length = 0
 
@@ -782,7 +764,7 @@ class App(Component):
             self.showing["sections"][section] = {}
             self.showing["sections"][section]["options"] = {}
             for option in options: #TODO: Allow for double grouping
-                if (word != '' and not App.is_match(word, option, options[option].desc)) or (self.only_checked.get() and options[option].value in ("no", "")):
+                if (word != '' and not App.is_match(word, option, options[option].desc, options[option].label)) or (self.only_checked.get() and options[option].value in ("no", "")):
                     options[option].get_frame().pack_forget()
                     count_hidden += 1
                 else:
