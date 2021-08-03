@@ -60,6 +60,7 @@ jobs:
               libudunits2-dev
               libgtest-dev
               python3
+              python3-tk
               python3-venv
               python3-dev
             install_gtest: cd /usr/src/gtest && cmake . && make && cp libgtest* /usr/lib/
@@ -84,6 +85,7 @@ jobs:
               zlib-devel
               gtest-devel
               python3-devel
+              python3-tkinter
 #-------- Ubuntu Only Dependencies ----------------
           - cfg: { os: ubuntu }
             os_deps: >-
