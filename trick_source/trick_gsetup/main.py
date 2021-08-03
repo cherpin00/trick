@@ -1136,7 +1136,7 @@ def main():
 
     default = "(default: %(default)s)"
     parser.add_argument("-s", "--script-file", default="./configure", help=f"script to add args to {default}")
-    parser.add_argument("-c", "--config", default=f"{os.path.dirname(os.path.realpath(__file__))}/sample_config.json", help=f"json file with gui options and settings {default}")
+    parser.add_argument("-c", "--config", default=f"{os.path.dirname(os.path.realpath(__file__))}/trick_config.json", help=f"json file with gui options and settings {default}")
     parser.add_argument("-b", "--build", action="store_true", default=False, help=f"guess the parameter choices from the scripts help output {default}")
     args = parser.parse_args()
 

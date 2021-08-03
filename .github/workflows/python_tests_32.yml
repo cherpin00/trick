@@ -1,11 +1,11 @@
-name: civet_32-bit
+name: Python Tests 32-bit
 
 on:
   push:
     paths-ignore:
     - 'docs/**'
     - '.github/workflows/**'
-    - '!.github/workflows/test_civet_32.yml'
+    - '!.github/workflows/python_tests_32.yml'
   pull_request:
 
 jobs:
@@ -78,3 +78,9 @@ jobs:
         ./run_tests.py
       env:
         TRICK_HOME: "${{ github.workspace }}"
+    - name: Run Gsetup tests
+      run: |
+        . share/trick/pymods/trick/.venv/bin/activate
+        cd trick_source/trick_gsetup
+        ./run_tests.py
+

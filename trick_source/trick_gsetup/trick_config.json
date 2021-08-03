@@ -10,8 +10,15 @@
                 "help": {
                     "desc": "display this help and exit",
                     "type": "radio",
-                    "value": "no",
-                    "options" : {"short" : {"desc" : "display thee short help of all included packages."}, "long" : { "desc" : "dipslay the long version of the help."}}
+                    "value": "short",
+                    "options": {
+                        "short": {
+                            "desc": "display thee short help of all included packages."
+                        },
+                        "long": {
+                            "desc": "dipslay the long version of the help."
+                        }
+                    }
                 },
                 "version": {
                     "desc": "display version information and exit",
@@ -20,14 +27,15 @@
                 },
                 "quiet": {
                     "desc": "do not print `checking ...' messages",
-                    "label" : "quite mode",
+                    "label": "quite mode",
                     "type": "flag",
                     "value": "no"
                 },
-                "config-file" : {
-                    "label" : "configuration cache file",
-                    "desc" : "file to cache test resuls in",
-                    "type" : "string"
+                "config-file": {
+                    "label": "configuration cache file",
+                    "desc": "file to cache test resuls in",
+                    "type": "string",
+                    "value": ""
                 },
                 "config-cache": {
                     "desc": "set the configuration cache file to 'config.cache'",
@@ -47,16 +55,18 @@
                 }
             }
         },
-        "Installation directories" : {
-            "options" : {
-                "prefix" : {
-                    "type" : "string",
-                    "desc" : "This is where we will install architecture-independent files.  Default value is '/usr/local'."
+        "Installation directories": {
+            "options": {
+                "prefix": {
+                    "type": "string",
+                    "desc": "This is where we will install architecture-independent files.  Default value is '/usr/local'.",
+                    "value": ""
                 },
-                "exec-prefix" : {
-                    "type" : "string",
-                    "desc" : "This is where we will install architecture-dependent files.  Default value is set to [PREFIX].",
-                    "label" : "executive prefix"
+                "exec-prefix": {
+                    "type": "string",
+                    "desc": "This is where we will install architecture-dependent files.  Default value is set to [PREFIX].",
+                    "label": "executive prefix",
+                    "value": ""
                 }
             }
         },
@@ -66,7 +76,7 @@
                     "desc": "default is [executive prefix]/bin",
                     "type": "dir",
                     "value": "",
-                    "label" : "user executables"
+                    "label": "user executables"
                 },
                 "sbindir": {
                     "desc": "default value is [executive prefix]/sbin",
@@ -78,19 +88,19 @@
                     "desc": "default value is [EPREFIX]/libexec",
                     "type": "dir",
                     "value": "",
-                    "label":"program executables"
+                    "label": "program executables"
                 },
                 "sysconfdir": {
                     "desc": "default value is [PREFIX]/etc",
                     "type": "dir",
                     "value": "",
-                    "label" : "read-only single-machine data"
+                    "label": "read-only single-machine data"
                 },
                 "sharedstatedir": {
                     "desc": "default value is [PREFIX]/com",
                     "type": "dir",
                     "value": "",
-                    "label" : "modifiable architecture-independent data"
+                    "label": "modifiable architecture-independent data"
                 },
                 "localstatedir": {
                     "desc": "default value is [PREFIX]/var",
@@ -108,7 +118,7 @@
                     "desc": "default value is [PREFIX]/include",
                     "type": "dir",
                     "value": "",
-                    "label" : "C header files"
+                    "label": "C header files"
                 },
                 "oldincludedir": {
                     "desc": "default value is [/usr/include]",
@@ -120,20 +130,20 @@
                     "desc": "default value is [PREFIX]/share",
                     "type": "dir",
                     "value": "",
-                    "label":"read-only arch.-independent data root",
+                    "label": "read-only arch.-independent data root",
                     "hidden": true
                 },
                 "datadir": {
                     "desc": "default value is [PREFIX]/share",
                     "type": "dir",
                     "value": "",
-                    "label" : "read-only architecture-independent data"
+                    "label": "read-only architecture-independent data"
                 },
                 "infodir": {
                     "desc": "default value is [DATAROOTDIR]/info",
                     "type": "dir",
                     "value": "",
-                    "label" : "info documentation"
+                    "label": "info documentation"
                 },
                 "localedir": {
                     "desc": "default value is [DATAROOTDIR]/locale",
@@ -195,25 +205,27 @@
         },
         "System types:": {
             "options": {
-                "build" : {
+                "build": {
                     "desc": "configure for building on ",
-                    "hidden" : true,
-                    "type" : "string"
+                    "hidden": true,
+                    "type": "string",
+                    "value": ""
                 },
                 "host": {
-                    "desc" : "host to corss-compile for",
-                    "label" : "corss compile host",
-                    "type" : "string"
+                    "desc": "host to corss-compile for",
+                    "label": "corss compile host",
+                    "type": "string",
+                    "value": ""
                 }
             }
         },
         "Optional Features:": {
             "options": {
-                "disable-option-checking":    {
+                "disable-option-checking": {
                     "desc": "--enable and --with options will be ignored if they are not recognized",
                     "type": "flag",
                     "value": "no",
-                    "label" : "ignore unrecognized options. "
+                    "label": "ignore unrecognized options. "
                 },
                 "disable-FEATURE": {
                     "desc": "do not include FEATURE (same as --enable-FEATURE=no)",
@@ -236,7 +248,7 @@
                     "desc": "Compile Trick with webserver capabilites.",
                     "type": "flag",
                     "value": "no",
-                    "label" : "enable mongoose"
+                    "label": "enable mongoose"
                 },
                 "enable-java": {
                     "desc": "use java (default is yes)",
@@ -263,44 +275,53 @@
                 "with-dmtcp": {
                     "desc": "",
                     "type": "dir",
-                    "label": "DMTCP root directory"
+                    "label": "DMTCP root directory",
+                    "value": ""
                 },
                 "with-gsl": {
                     "desc": "",
                     "type": "dir",
-                    "label": "GSL root directory"
+                    "label": "GSL root directory",
+                    "value": ""
                 },
                 "with-gtest": {
                     "desc": "",
                     "type": "dir",
-                    "label": "GTEST root directory"
+                    "label": "GTEST root directory",
+                    "value": ""
                 },
                 "with-hdf5": {
                     "type": "dir",
-                    "label": "HDF5 root directory"
+                    "label": "HDF5 root directory",
+                    "value": ""
                 },
                 "with-llvm": {
                     "type": "dir",
-                    "label": "LLVM root directory"
+                    "label": "LLVM root directory",
+                    "value": ""
                 },
                 "with-python": {
                     "type": "dir",
-                    "label": "python root directory"
+                    "label": "python root directory",
+                    "value": ""
                 },
                 "with-swig": {
                     "desc": "",
                     "type": "dir",
-                    "label": "path of directory containing the SWIG executable."
+                    "label": "path of directory containing the SWIG executable.",
+                    "value": ""
                 },
                 "with-tpro": {
                     "desc": "",
                     "type": "dir",
-                    "label": "TPRO root directory"
+                    "label": "TPRO root directory",
+                    "value": ""
                 },
                 "with-udunits": {
                     "desc": "",
                     "type": "dir",
-                    "label": ""
+                    "label": "",
+                    "value": ""
                 },
                 "without-zlib": {
                     "desc": "check to disable zlib usage completely",
@@ -311,12 +332,14 @@
                 "with-zlib": {
                     "desc": "root directory path of zlib installation [defaults to /usr/local or /usr if not found in /usr/local]",
                     "type": "dir",
-                    "label": "zlib directory"
+                    "label": "zlib directory",
+                    "value": ""
                 },
                 "with-bc635": {
                     "desc": "",
                     "type": "dir",
-                    "label": "BC635 root directory"
+                    "label": "BC635 root directory",
+                    "value": ""
                 },
                 "without-PACKAGE": {
                     "desc": "do not use PACKAGE (same as --with-PACKAGE=no)",
