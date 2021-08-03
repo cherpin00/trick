@@ -1,5 +1,6 @@
 import pytest
 import os
+import subprocess
 
 from main import string_to_bool, bool_to_string, run, get_configure_command, Section, Data
 
@@ -147,8 +148,10 @@ def test_run():
     dir_path = os.path.dirname(os.path.realpath(__file__))
     stdout = run('echo Hello World!')
     assert stdout == "Hello World!\n"
-    stdout = run("configure")
-    assert stdout == "/bin/sh: 1: configure: not found\n"
+    file = "bad_file"
+    stdout = run(file)
+    process = subprocess.run(file, stderr=subprocess.STDOUT, stdout=subprocess.PIPE, shell=True)
+    assert process.stdout.decode() == stdout
     stdout = run(f"python3 {dir_path}/check_env.py", "hello")
     assert stdout == "Hello World!\n"
 
