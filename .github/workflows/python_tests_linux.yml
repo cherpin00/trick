@@ -40,7 +40,6 @@ jobs:
             install_gtest: echo gtest already installed
             conf_pkg:  echo package manager already configured
             install_cmd: install -y
-            install_virtual_display: echo "nothing to install"
 #-------- Debian-based Dependencies ----------------
           - cfg: { arch: debian }
             pkg_mgr: apt-get
@@ -88,9 +87,7 @@ jobs:
               gtest-devel
               python3-devel
               python3-tkinter
-            install_virtual_display: >-
-               wget http://vault.centos.org/6.2/os/x86_64/Packages/xorg-x11-server-Xvfb-1.10.4-6.el6.x86_64.rpm
-               yum localinstall xorg-x11-server-Xvfb-1.10.4-6.el6.x86_64.rpm
+              xorg-x11-server-Xvfb
 #-------- Ubuntu Only Dependencies ----------------
           - cfg: { os: ubuntu }
             os_deps: >-
