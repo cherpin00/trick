@@ -33,7 +33,7 @@ jobs:
       run: |
         # sudo installer -pkg /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.15.pkg -target /
         brew install --cask xquartz
-        brew install llvm@11 swig udunits openmotif maven python-tk
+        brew install llvm@11 swig udunits openmotif maven python-tk bc
         brew link llvm llvm@11
     - name: Create testing environment
       run: |

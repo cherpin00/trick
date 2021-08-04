@@ -64,6 +64,7 @@ jobs:
               python3-venv
               python3-dev
               xvfb
+              bc
             install_gtest: cd /usr/src/gtest && cmake . && make && cp libgtest* /usr/lib/
 #-------- RHEL Dependencies ----------------
           - cfg: { arch: rhel }
