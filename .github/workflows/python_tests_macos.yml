@@ -55,7 +55,7 @@ jobs:
       run: |
         . share/trick/pymods/trick/.venv/bin/activate
         cd share/trick/pymods/trick/
-        (cd $TRICK_HOME/trick_sims/Ball/SIM_ball_L1 && $TRICK_HOME/bin/trick-CP && ./S_main_* RUN_test/input_for_test.py &) && ./run_tests.py tests/test_variable_server.py && pkill -9 S_main_
+        ./run_variable_server_test.sh
       env:
         TRICK_HOME: "${{ github.workspace }}"
         
