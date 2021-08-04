@@ -43,7 +43,7 @@ jobs:
 #-------- Debian-based Dependencies ----------------
           - cfg: { arch: debian }
             pkg_mgr: apt-get
-            conf_pkg:  apt-get update
+            conf_pkg: DEBIAN_FRONTEND=noninteractive && apt-get update && apt-get install -y tzdata
             arch_deps: >-
               swig
               curl
