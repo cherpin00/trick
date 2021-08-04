@@ -1,11 +1,11 @@
-name: Civet_Linux
+name: Python Tests Linux
 
 on:
   push:
     paths-ignore:
     - 'docs/**'
     - '.github/workflows/**'
-    - '!.github/workflows/test_civet_linux.yml'
+    - '!.github/workflows/python_tests_linux.yml'
   pull_request:
 
 jobs:
@@ -43,7 +43,7 @@ jobs:
 #-------- Debian-based Dependencies ----------------
           - cfg: { arch: debian }
             pkg_mgr: apt-get
-            conf_pkg:  apt-get update
+            conf_pkg: DEBIAN_FRONTEND=noninteractive && apt-get update && apt-get install -y tzdata
             arch_deps: >-
               swig
               curl
@@ -60,8 +60,10 @@ jobs:
               libudunits2-dev
               libgtest-dev
               python3
+              python3-tk
               python3-venv
               python3-dev
+              xvfb
             install_gtest: cd /usr/src/gtest && cmake . && make && cp libgtest* /usr/lib/
 #-------- RHEL Dependencies ----------------
           - cfg: { arch: rhel }
@@ -84,6 +86,8 @@ jobs:
               zlib-devel
               gtest-devel
               python3-devel
+              python3-tkinter
+              xorg-x11-server-Xvfb
 #-------- Ubuntu Only Dependencies ----------------
           - cfg: { os: ubuntu }
             os_deps: >-
@@ -177,6 +181,15 @@ jobs:
         run: |
           cd share/trick/pymods/trick/
           . .venv/bin/activate
-          ./run_tests.py
+          ./run_tests.py tests/civet_server
         env:
           TRICK_HOME: "${{ github.workspace }}"
+      - name: Run Variable Server Tests
+        run: |
+          . share/trick/pymods/trick/.venv/bin/activate
+          cd share/trick/pymods/trick/
+          (cd $TRICK_HOME/trick_sims/Ball/SIM_ball_L1 && $TRICK_HOME/bin/trick-CP && ./S_main_* RUN_test/input_for_test.py &) && ./run_tests.py tests/test_variable_server.py && pkill -9 S_main_
+        env:
+          TRICK_HOME: "${{ github.workspace }}"
+
+

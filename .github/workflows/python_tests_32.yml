@@ -1,11 +1,11 @@
-name: civet_32-bit
+name: Python Tests 32-bit
 
 on:
   push:
     paths-ignore:
     - 'docs/**'
     - '.github/workflows/**'
-    - '!.github/workflows/test_civet_32.yml'
+    - '!.github/workflows/python_tests_32.yml'
   pull_request:
 
 jobs:
@@ -39,7 +39,7 @@ jobs:
         glibc.i686 glibc-devel.i686 udunits2 udunits2-devel gtest-devel.i686
         java-11-openjdk java-11-openjdk-devel expat-devel.i686
         which gcc-gfortran git wget gsl-devel gtest-devel gsl-devel.i686
-        maven udunits2 udunits2-devel zip
+        maven udunits2 udunits2-devel zip python3-tkinter xorg-x11-server-Xvfb
     - name: Symlink python
       run: |
         cd /usr/lib
@@ -75,6 +75,14 @@ jobs:
       run: |
         cd share/trick/pymods/trick/
         . .venv/bin/activate
-        ./run_tests.py
+        ./run_tests.py tests/civet_server
       env:
         TRICK_HOME: "${{ github.workspace }}"
+    - name: Run Variable Server Tests
+      run: |
+        . share/trick/pymods/trick/.venv/bin/activate
+        cd share/trick/pymods/trick/
+        (cd $TRICK_HOME/trick_sims/Ball/SIM_ball_L1 && $TRICK_HOME/bin/trick-CP && ./S_main_* RUN_test/input_for_test.py &) && ./run_tests.py tests/test_variable_server.py && pkill -9 S_main_
+      env:
+        TRICK_HOME: "${{ github.workspace }}"
+
