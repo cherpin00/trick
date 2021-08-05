@@ -1,3 +1,4 @@
+#!/bin/bash
 pushd $TRICK_HOME/trick_sims/Ball/SIM_ball_L1
 $TRICK_HOME/bin/trick-CP
 ./S_main_* RUN_test/input_for_test.py &
