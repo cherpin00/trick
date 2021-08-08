@@ -78,3 +78,9 @@ jobs:
         ./run_tests.py
       env:
         TRICK_HOME: "${{ github.workspace }}"
+    - name: Run Gsetup tests
+      run: |
+        . share/trick/pymods/trick/.venv/bin/activate
+        cd trick_source/trick_gsetup
+        ./run_tests.py
+

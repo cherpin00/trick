@@ -1,0 +1,3 @@
+[submodule "trick_source/trick_gsetup"]
+	path = trick_source/trick_gsetup
+	url = git@github.com:cherpin00/trick_gsetup.git
