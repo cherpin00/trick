@@ -15,6 +15,10 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@master
+    - name: Checkout gsetup
+      run: |
+        git submodule init
+        git submodule update
     - name: Add yum repo
       run: yum -y install epel-release.noarch && yum -y update
     - name: Install python dependencies
