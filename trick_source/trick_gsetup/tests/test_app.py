@@ -1,5 +1,5 @@
 import pytest
-from main import App, ChooseConfigure, LandingPage
+from main import App, LandingPage
 from tkinter.constants import END
 import os
 
@@ -44,15 +44,6 @@ def test_search():
     }
     a.get_frame().destroy()
     assert expected == result
-
-def test_no_config():
-    c = ChooseConfigure()
-    file = c.get_file()
-    c.get_frame().destroy()
-    l = LandingPage(config_file = file)
-    l.get_frame().destroy()
-    a = App(file)
-    a.get_frame().destroy()
 
 def test_app():
     my_json = {
